@@ -1,0 +1,48 @@
+# Prometheus configuration for MegaRAID Exporter (MegaCLI)
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+rule_files:
+  - "megaraid-alerts.yml"
+
+scrape_configs:
+  - job_name: 'megaraid'
+    static_configs:
+      - targets: ['localhost:9272']
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    metrics_path: /metrics
+    
+    # Relabel to add instance information
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9272
+
+  # Multi-server setup example
+  - job_name: 'megaraid-servers'
+    static_configs:
+      - targets: 
+        - 'server1.example.com:9272'
+        - 'server2.example.com:9272'
+        - 'server3.example.com:9272'
+    scrape_interval: 30s
+    scrape_timeout: 25s
+    
+    # Add server labels
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '([^:]+):.*'
+        target_label: server
+        replacement: '${1}'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093

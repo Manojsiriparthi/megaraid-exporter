@@ -1,0 +1,48 @@
+# MegaRAID Exporter Configuration
+server:
+  # HTTP server port (using 9633 to avoid conflicts with common ports)
+  port: 9633
+  host: "0.0.0.0"
+  metrics_path: "/metrics"
+  read_timeout: 30s
+  write_timeout: 30s
+
+# Scraping configuration
+scraping:
+  interval: 30s
+  timeout: 10s
+  
+# MegaRAID CLI configuration
+megaraid:
+  # Path to MegaCLI binary
+  megacli_path: "/opt/MegaRAID/MegaCli/MegaCli64"
+  scan_interval: 30s
+  
+  # Alternative path for storcli
+  storcli_path: "/opt/MegaRAID/storcli/storcli64"
+  
+  # Controllers to monitor (empty array = auto-detect all)
+  controllers: []
+  
+  # Enable/disable specific monitoring features
+  features:
+    physical_drives: true
+    virtual_drives: true
+    battery_backup: true
+    controller_info: true
+    smart_status: true
+
+# Logging configuration
+logging:
+  level: "info"
+  format: "json"
+  file: "/var/log/megaraid-exporter.log"
+
+# Metrics configuration
+metrics:
+  namespace: "megaraid"
+  
+  # Labels to add to all metrics
+  labels:
+    environment: "production"
+    datacenter: "dc1"

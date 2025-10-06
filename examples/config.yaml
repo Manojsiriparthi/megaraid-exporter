@@ -1,0 +1,49 @@
+# MegaRAID Exporter Configuration (MegaCLI64)
+
+# Server configuration
+port: 9272
+log_level: "info"
+
+# MegaCLI configuration
+megacli_path: "/usr/sbin/megacli64"
+command_timeout: 30s
+
+# Metrics collection settings
+metrics:
+  collect_interval: 30s
+  
+  # Enable/disable specific collectors
+  enabled_collectors:
+    - controller      # Controller status and info
+    - arrays         # Virtual drives/arrays
+    - drives         # Physical drives
+    - bbu           # Battery backup unit
+    - events        # Event log monitoring
+    - foreign       # Foreign configuration detection
+  
+  # Event monitoring settings
+  events:
+    # Monitor events from last N hours
+    lookback_hours: 24
+    # Event severity levels to monitor
+    severity_levels:
+      - "critical"
+      - "warning"
+      - "informational"
+
+# Optional: Filter specific controllers
+# controllers:
+#   - 0  # Only monitor controller 0
+#   - 1  # And controller 1
+
+# Optional: Advanced settings
+advanced:
+  # Skip drives in these states (for performance)
+  skip_drive_states:
+    - "Unconfigured(bad)"
+  
+  # Maximum concurrent MegaCLI commands
+  max_concurrent_commands: 3
+  
+  # Cache command output for seconds (reduces load)
+  cache_duration: 15s

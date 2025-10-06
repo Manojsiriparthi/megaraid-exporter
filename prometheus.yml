@@ -1,0 +1,36 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'megaraid-exporter'
+    static_configs:
+      - targets: ['megaraid-exporter:9272']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+    
+  # Multiple servers example
+  - job_name: 'megaraid-servers'
+    static_configs:
+      - targets: 
+          - 'server1:9272'
+          - 'server2:9272'
+          - 'server3:9272'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__address__]
+        regex: '([^:]+):\d+'
+        target_label: hostname
+        replacement: '${1}'

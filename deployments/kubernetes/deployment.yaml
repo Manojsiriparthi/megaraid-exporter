@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: megaraid-exporter
+  namespace: monitoring
+  labels:
+    app: megaraid-exporter
+spec:
+  selector:
+    matchLabels:
+      app: megaraid-exporter
+  template:
+    metadata:
+      labels:
+        app: megaraid-exporter
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: megaraid-exporter
+        image: megaraid-exporter:latest
+        ports:
+        - containerPort: 9272
+          name: metrics
+        env:
+        - name: LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dev
+          mountPath: /dev
+        - name: sys
+          mountPath: /sys
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9272
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: 9272
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: sys
+        hostPath:
+          path: /sys
+      nodeSelector:
+        hardware.raid: "megaraid"
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: megaraid-exporter
+  namespace: monitoring
+  labels:
+    app: megaraid-exporter
+spec:
+  ports:
+  - port: 9272
+    targetPort: 9272
+    name: metrics
+  selector:
+    app: megaraid-exporter

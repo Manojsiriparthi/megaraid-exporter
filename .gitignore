@@ -1,0 +1,41 @@
+# Binaries
+megaraid-exporter
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Configuration files (may contain sensitive data)
+config.local.yaml
+*.env
+
+# Build artifacts
+dist/
+build/
+
+# Temporary files
+/tmp/
+*.tmp
